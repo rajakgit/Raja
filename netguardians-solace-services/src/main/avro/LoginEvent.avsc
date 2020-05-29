@@ -1,0 +1,18 @@
+{"namespace": "com.welab",
+   "type": "record",
+   "name": "LoginEvent",
+   "fields": [
+     {"name": "user_id", "type": "string"},
+     {"name": "session_login_status",  "type": "string"},
+     {"name": "session_login_time", "type": "string"},
+     {"name": "session_auth_type", "type": "string"},
+     {"name": "session_device_id", "type": "string"},
+     {"name": "session_operation_system",  "type": "string"},
+     {"name": "session_browser", "type": "string"},
+     {"name": "session_screen_resolution", "type": "string"},
+     {"name": "session_language", "type": "string"},
+     {"name": "session_country",  "type": "string"},
+     {"name": "session_city", "type": "string"},
+     {"name": "session_ip_address", "type": "string"}
+   ]
+ }

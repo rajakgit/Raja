@@ -1,0 +1,221 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.1.2.RELEASE</version>
+	</parent>
+
+
+	<groupId>com.netguardians.solace</groupId>
+	<artifactId>ngSolaceServices</artifactId>
+	<!--with version update also ng-solace.sh must be updated to look for correct file-->
+	<version>0.0.2-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>netguardians-solace-services</name>
+	<description>netguardians-solace-services</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<java.version>1.8</java.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<!-- exclude logback , add log4j2 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-log4j2</artifactId>
+		</dependency>
+
+		<!-- for log4j2.yml, need jackson-databind and jackson-dataformat-yaml -->
+		<!-- spring-boot-starter-web -> spring-boot-starter-json -> jackson-databind -->
+		<!-- included by spring boot <dependency> <groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId> </dependency> -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.dataformat</groupId>
+			<artifactId>jackson-dataformat-yaml</artifactId>
+		</dependency>
+
+		<!-- JUnit -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Mockito -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<!-- Gson -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+		<!-- Solace -->
+		<dependency>
+			<groupId>com.solacesystems</groupId>
+			<artifactId>sol-jms</artifactId>
+			<version>10.2.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>28.1-jre</version>
+		</dependency>
+		<!-- Netguardians libraries -->
+		<dependency>
+			<groupId>com.netguardians</groupId>
+			<artifactId>ngSyslogAppender</artifactId>
+			<version>1.2.1</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.stimulussoft/filequeue -->
+		<dependency>
+			<groupId>com.stimulussoft</groupId>
+			<artifactId>filequeue</artifactId>
+			<version>1.1.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>ch.qos.logback</groupId>
+					<artifactId>logback-classic</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<!-- Package to rpm after mvn install - exec mvn package -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>rpm-maven-plugin</artifactId>
+				<version>2.2.0</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>rpm</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<license>2019, NetGuardians</license>
+					<group>ng-screener</group>
+					<defaultDirmode>700</defaultDirmode>
+					<defaultFilemode>700</defaultFilemode>
+					<defaultUsername>ng-screener</defaultUsername>
+					<defaultGroupname>ng-screener</defaultGroupname>
+					<needarch>x86_64</needarch>
+					<!-- application jar file -->
+					<mappings>
+						<mapping>
+							<directory>/usr/local/ng-screener/ng-solace/lib</directory>
+							<dependency />
+							<artifact />
+						</mapping>
+						<!-- ng service properties -->
+						<!-- solace properties -->
+						<mapping>
+							<directory>/etc/ng-screener/ng-solace</directory>
+							<sources>
+								<source>
+									<location>${project.basedir}/src/main/properties/</location>
+									<includes>
+										<include>*/**</include>
+									</includes>
+								</source>
+							</sources>
+						</mapping>
+						<!-- log4j YML -->
+						<!-- application YML -->
+						<mapping>
+							<directory>/etc/ng-screener/ng-solace/</directory>
+							<sources>
+								<source>
+									<location>${project.basedir}/src/main/resources/</location>
+									<includes>
+										<include>log4j2.yml</include>
+										<include>application.yml</include>
+									</includes>
+								</source>
+							</sources>
+						</mapping>
+						<mapping>
+							<directory>/var/log/ng-screener/ng-solace</directory>
+						</mapping>
+						<!-- shell script -->
+						<mapping>
+							<directory>/usr/local/bin/</directory>
+							<sources>
+								<source>
+									<location>${project.basedir}/src/main/scripts/ng-solace.sh</location>
+								</source>
+							</sources>
+							<directoryIncluded>false</directoryIncluded>
+						</mapping>
+						<!-- service file -->
+						<mapping>
+							<directory>/usr/lib/systemd/system</directory>
+							<sources>
+								<source>
+									<location>${project.basedir}/src/main/scripts/ng-solace.service</location>
+								</source>
+							</sources>
+							<directoryIncluded>false</directoryIncluded>
+						</mapping>
+					</mappings>
+					<preinstallScriptlet>
+						<scriptFile>${project.basedir}/src/main/scripts/preinstall.sh</scriptFile>
+					</preinstallScriptlet>
+					<postinstallScriptlet>
+						<scriptFile>${project.basedir}/src/main/scripts/postinstall.sh</scriptFile>
+						<fileEncoding>utf-8</fileEncoding>
+					</postinstallScriptlet>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
